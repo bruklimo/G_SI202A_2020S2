@@ -1,9 +1,9 @@
 # G_SI202A_2020S2
-Atividade 03 - G_SI202A_2020S2 - FT Unicamp
+## Atividade 03 - G_SI202A_2020S2 - FT Unicamp
 
 * Integrantes do grupo 15:
 
-Bruno Alexander Klimowitsch Lins - 167460
+<p> Bruno Alexander Klimowitsch Lins - 167460 </p>
 Davi Pereira Bergamin - 169753
 Felipe Araújo Santos Pinto - 169401
 Guilherme Alves Vaz - 216843

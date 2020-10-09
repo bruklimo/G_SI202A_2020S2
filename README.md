@@ -10,4 +10,4 @@
 
 * Jogo a ser trabalhado: Connect 4
 
-   [![Clique aqui para acessar o colab]()](https://colab.research.google.com/drive/146c4tsxUDjDUIxITThfQq20Iv0glK--5?authuser=1#scrollTo=CvEdER2-glpO)
+   [![Clique aqui para acessar o colab]()](https://colab.research.google.com/drive/18rh99Ysn-UtySzeQmBMX5pQiEobXgxHX?usp=sharing#scrollTo=-4KfHZoj7xJD)

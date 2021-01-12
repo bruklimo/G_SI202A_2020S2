@@ -61,20 +61,25 @@ def criar_tabuleiro():
 
 #
 def winner(tabuleiro):
-
     # horizontais
     linha = ""
     for a in range(42):
         linha += str(tabuleiro[a])
-        if a % 7 == 6:
+        if a % 7 == 6:  # quebra de linha
             linha += '*'
+
+
+
 
     # verticais
     coluna = ""
     for a in range(7):
         for b in range(6):
-            coluna += str(tabuleiro[(b * 7) + a])
-        coluna += '*'
+            coord = (b * 7) + a
+            coluna += str(tabuleiro[coord])
+
+        coluna += '*'  # quebra de coluna
+
 
     # diagonais decrescentes
     diag1 = ""
@@ -84,30 +89,39 @@ def winner(tabuleiro):
     i = 0
     for a in faz:
         for b in range(qtd[i]):
-            diag1 += str(tabuleiro[a + (b * 8)])
+            coord = a + (b * 8)
+            diag1 += str(tabuleiro[coord])
+
         diag1 += '*'
         i += 1
+
+    win_position = [0, 0]
+    last_added = 0
+    contagem = 0
 
     # diagonais crescentes
     faz = [3, 4, 5, 6, 13, 20]
     i = 0
     for a in faz:
         for b in range(qtd[i]):
+            coord = a + (b * 6)
             diag1 += str(tabuleiro[a + (b * 6)])
+
         diag1 += '*'
         i += 1
 
-
-
+    won = 0
     if linha.count("1111") > 0 or coluna.count("1111") > 0 or diag1.count("1111") > 0:
-        return 1
+        won = 1
     elif linha.count("2222") > 0 or coluna.count("2222") > 0 or diag1.count("2222") > 0:
-        return 2
-    return 0
+        won = 2
+    else:
+        won = 0
+
+    return won
 
 #
 def winner_pos(tabuleiro):
-    
     win_position = [0, 0]
     last_added = 0
     contagem = 0
@@ -123,20 +137,18 @@ def winner_pos(tabuleiro):
             contagem = 0
             win_position[0] = a
 
-        if contagem ==3:
+        if contagem == 3:
             win_position[1] = a
-            return  win_position
+            return win_position
 
-        if tabuleiro[a] != 0:
-            last_added = tabuleiro[a]
+        #if tabuleiro[a] == 0:
+        last_added = tabuleiro[a]
 
-
-
-        if a % 7 == 6: #quebra de linha
+        if a % 7 == 6:  # quebra de linha
             linha += '*'
             last_added = 0
             contagem = 0
-            win_position=[0,0]
+            win_position = [0, 0]
 
     win_position = [0, 0]
     last_added = 0
@@ -159,11 +171,10 @@ def winner_pos(tabuleiro):
                 win_position[1] = coord
                 return win_position
 
-            if tabuleiro[coord] != 0:
-                last_added = tabuleiro[coord]
+            #if tabuleiro[coord] == 0:
+            last_added = tabuleiro[coord]
 
-
-        coluna += '*' #quebra de coluna
+        coluna += '*'  # quebra de coluna
         win_position = [0, 0]
         last_added = 0
         contagem = 0
@@ -193,8 +204,8 @@ def winner_pos(tabuleiro):
                 win_position[1] = coord
                 return win_position
 
-            if tabuleiro[coord] != 0:
-                last_added = tabuleiro[coord]
+            #if tabuleiro[coord] == 0:
+            last_added = tabuleiro[coord]
 
         diag1 += '*'
         win_position = [0, 0]
@@ -224,8 +235,8 @@ def winner_pos(tabuleiro):
                 win_position[1] = coord
                 return win_position
 
-            if tabuleiro[coord] != 0:
-                last_added = tabuleiro[coord]
+            #if tabuleiro[coord] == 0:
+            last_added = tabuleiro[coord]
 
         diag1 += '*'
         win_position = [0, 0]
@@ -241,12 +252,69 @@ def winner_pos(tabuleiro):
 def get_valid_moves(tabuleiro):
     valid =[]
     for a in range(7):
+        for b in range(a+35,a-1,-7):
+            if tabuleiro[b] == 0:
+                valid.append(b)
+                break
+    return valid
+
+#
+def get_valid_moves2(tabuleiro): #movimentos validos com "-1" nas colunas cheias
+    valid =[]
+    for a in range(7):
         valid.append(-1)
         for b in range(a+35,a-1,-7):
             if tabuleiro[b] == 0:
                 valid[a] = b
                 break
     return valid
+
+"""###Jogador Humano e Aleatório"""
+
+#
+def human_player(tab, turn):
+    valids = get_valid_moves2(tab) #get_valid_moves2 foi escolhido para poder converter facilmente jogadas de 1 a 7 em jogadas
+    validos_humano = [] #jogadas validas que vao ser consideradas
+    validos_para_exibir = [] #jogas possiveis que vao ser exibidas
+
+    for mov in valids:
+        if mov > -1:
+            validos_humano.append(mov % 7)
+            validos_para_exibir.append(mov % 7)
+        else:
+            #validos_humano.append(-1)
+            validos_para_exibir.append('x')
+
+    if turn == 1:
+        cor = "azul"
+    else:
+        cor = "vermelho"
+
+    printTab(tab,turn)
+    #print("Movimentos válidos: " + str(validos_para_exibir)) 
+    #print("Sua cor é " + cor)
+    #print(validos_humano)
+    print("Sua jogada (coluna): ")
+    move = int(input())
+
+    while (not move in validos_humano) or (move < 0):
+        printTab(tab,turn)
+        #print("Movimentos válidos: " + str(validos_para_exibir))
+        #print("Sua cor é " + cor)
+        print("Sua jogada (coluna): ")
+        move = int(input())
+
+    move = valids[move] #convertendo jogada de 1 a 7 em jogada de 0 a 42
+
+    return turn, move
+
+#
+import random
+
+def player(tab, turn) :
+    valid_moves = get_valid_moves(tab)
+    if valid_moves :
+        return (turn, random.choice(valid_moves) )
 
 """###Função que desenha o tabuleiro"""
 
@@ -270,17 +338,36 @@ def printTab_console(tabuleiro):
 
 #
 from PIL import Image, ImageDraw, ImageFont
-def printTab(tabuleiro):
+def printTab(tabuleiro,turn):
 
-    board = Image.new('RGB',(350,300),"yellow")
+    board = Image.new('RGB',(350,360),"yellow")
     
     draw = ImageDraw.Draw(board)
+
+    valids = get_valid_moves2(tabuleiro)
+    validos_humano = [] #jogadas validas que vao ser consideradas
+    validos_para_exibir = [] #jogas possiveis que vao ser exibidas
+
+    for mov in valids:
+        if mov > -1:
+            validos_humano.append(mov % 7)
+            validos_para_exibir.append(mov % 7)
+        else:
+            #validos_humano.append(-1)
+            validos_para_exibir.append('x')
 
     #Margens pra deixar bonitinho
     draw.line((0, 0, 350, 0), fill="black", width=2)
     draw.line((0, 300, 350, 300), fill="black", width=2)
     draw.line((0, 0, 0, 300), fill="black", width=2)
     draw.line((348, 0, 348, 300), fill="black", width=2)
+    draw.text((15, 305),'Movimentos válidos (colunas):'+ str(validos_para_exibir), align ="left", fill="black")
+    
+    if turn == 1:
+        draw.text((15, 315),'Sua cor é azul', align ="left", fill="blue")
+    else:
+        draw.text((15, 315),'Sua cor é vermelho', align ="left", fill="red")
+    
 
     #Linhas horizontais
     for i in range(1,6):
@@ -302,57 +389,20 @@ def printTab(tabuleiro):
         elif tabuleiro[index] == 2:
             draw.ellipse((3 + (50 * coordX), 3 + (50 * coordY), 48 + (50 * coordX), 48 + (50 * coordY)), fill="red",
                          width=6, outline="red")  # desenhar uma peça
+
+    venceu = winner(tabuleiro)
+    if venceu !=0:
+        win_pos = winner_pos(tabuleiro)
+        coordX1 = ((win_pos[0] % 7) *50)+25
+        coordY1 = ((win_pos[0] // 7) *50)+25
+
+        coordX2 = ((win_pos[1] % 7) * 50) + 25
+        coordY2 = ((win_pos[1] // 7) * 50) + 25
+
+        draw.line((coordX1, coordY1,coordX2, coordY2), fill="cyan", width=15)
     
 
     display(board)
-
-"""###Jogador Humano e Aleatório"""
-
-#
-def human_player(tab, turn):
-    valids  = get_valid_moves(tab)
-    validos_humano =[]
-    validos_para_exibir=[]
-
-    for mov in valids:
-        if mov >-1:
-            validos_humano.append(mov % 7)
-            validos_para_exibir.append(mov % 7)
-        else:
-            validos_humano.append(-1)
-
-        
-
-    if turn ==1:
-      cor = "azul" 
-    else:
-      cor = "vermelho"
-
-    printTab(tab)
-    print("Movimentos válidos: "+ str(validos_para_exibir))
-    print("Sua cor é "+cor)
-    #print(validos_humano)
-    print("Sua jogada: ")
-    move = int(input())
-
-    while (not move in validos_humano) or (move <0):
-         printTab(tab)
-         print("Movimentos válidos: "+ str(validos_para_exibir))
-         print("Sua cor é "+cor)
-         print("Sua jogada: ")
-         move = int(input())
-
-    move = valids[move]
-
-    return turn, move
-
-#
-import random
-
-def player(tab, turn) :
-    valid_moves = get_valid_moves(tab)
-    if valid_moves :
-        return (turn, random.choice(valid_moves) )
 
 """###Função Game"""
 
@@ -426,33 +476,68 @@ def campeonato_with_knowledge(player1, player2, numJogos = 1000, conhecimento = 
 
 """##Jogo para inaugurar a interface"""
 
-print(winner(criar_tabuleiro()))
-printTab(criar_tabuleiro())
-print(winner_pos(tabuleiro))
+_,hist = game(player,player)
 
-tabule     =(0, 0, 0, 0, 0, 0, 0,
-#            0  1  2  3  4  5  6
-             0, 0, 0, 0, 0, 0, 0,
-#            7  8  9 10 11 12 13
-             0, 0, 0, 0, 1, 0, 0,
-#           14 15 16 17 18 19 20
-             1, 1, 1, 0, 1, 0, 0,
-#           21 22 23 24 25 26 27
-             2, 1, 2, 2, 1, 1, 1,
-#           28 29 30 31 32 33 34
-             2, 2, 2, 1, 1, 1, 1)
-#           35 36 37 38 39 40 41
+printTab(hist[len(hist)-1],0)
 
-print(winner(tabule))
-printTab(tabule)
-print(winner_pos(tabule))
+vencedor,hist = game(player,human_player)
 
-vencedor, _ = game(player,player)
-print(vencedor)
+if vencedor ==1:
+  from IPython.core.display import display, HTML
+  display(HTML('<marquee direction="down" width="250" height="200" behavior="alternate" style="border:solid;color:blue"><marquee behavior="alternate">Azul venceu!!!</marquee>'))
+elif vencedor ==2:
+  from IPython.core.display import display, HTML
+  display(HTML('<marquee direction="down" width="250" height="200" behavior="alternate" style="border:solid;color:red"> <marquee behavior="alternate">Vermelho venceu!!!</marquee>'))
+else:
+  display(HTML('<marquee direction="down" width="250" height="200" behavior="alternate" style="border:solid;color:black"> <marquee behavior="alternate"> Empate!!!</marquee>'))
 
-win_pos =winner_pos(tabule)
-print(win_pos)
+printTab(hist[len(hist)-1],0)
 
-"""Notas
-1. A interface não tem texto porque eu não consegui colcoar fontes no colab
+"""##Player Com Inteligêcia
+
+A estratégia é do bot é imaginar as jogadas que ele pode fazer e consultar os tabuleiros que vierem dessas jogadas na base de conhecimento. O tabuleiro que tiver o maior índice de vitória vai definir a jogada que o bot vai fazer. Se o tabuleiro não existir na base de conhecimento o bot vai atribuir um índice de vitória aleatório
 """
+
+#
+def create_player(conhecimento = {}):
+    def player(tab,turn):
+        valid_moves = get_valid_moves(tab)
+        best_play =-1
+        best_play_chance=-1
+
+        for play in valid_moves: #loop para imaginar cada jogada
+
+            #imaginando...
+            tab_copy = list(tab)
+            tab_copy[play] = turn
+
+            #comparando a jogada com o conhecimento
+            if tab in conhecimento:
+                resusltados = conhecimento.get(tab,[0,0,0])
+                total = resusltados[0]+resusltados[1]+resusltados[2]
+                vitorias = resusltados[turn]
+                play_chance = vitorias/total
+            else:
+                play_chance = random.uniform(0, 1)
+
+            #comparando a jogada com as outras
+            if best_play_chance < play_chance:
+                best_play_chance = play_chance
+                best_play = play
+
+        #print("jogando: " + str(best_play) + " com score: " + str(best_play_chance))
+        return (turn,best_play)
+
+    return player
+
+#Treinamento do bot
+conhecimento = {}
+for i in range(1):
+    res, conhecimento = campeonato_with_knowledge(player, player, 100000, conhecimento)
+    print(res)
+
+#testando o bot
+player1000qi = create_player(conhecimento)
+for i in range(10):
+    res,_ = campeonato_with_knowledge(player,player1000qi,20)
+    print(res)
